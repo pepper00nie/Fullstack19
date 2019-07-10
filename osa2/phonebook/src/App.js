@@ -1,19 +1,23 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import Search from './components/Search'
 import NewPersonForm from './components/NewPersonForm'
 import List from './components/List'
 
 const App = () => {
-  const [ persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ])
+  const [ persons, setPersons] = useState([])
   const [ newPerson, setNewPerson ] = useState(
     { name: '', number: '' }
   )
   const [ search, setSearch ] = useState('')
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(result => {
+        setPersons(result.data)
+      })
+  },[])
 
   const nameChangeHandler = (event) => {
     setNewPerson({...newPerson, name: event.target.value})
@@ -46,7 +50,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <Search search={search} handler={searchChangeHandler} />
-      <h3>Add new contact</h3>
+      <h2>Add new contact</h2>
       <NewPersonForm
         name={newPerson.name}
         number={newPerson.number}
