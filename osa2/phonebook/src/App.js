@@ -3,6 +3,7 @@ import contactService from './services/contact'
 import Search from './components/Search'
 import NewPersonForm from './components/NewPersonForm'
 import List from './components/List'
+import Notification from './components/Notification'
 
 const App = () => {
   const [ persons, setPersons] = useState([])
@@ -10,7 +11,9 @@ const App = () => {
     { name: '', number: '' }
   )
   const [ search, setSearch ] = useState('')
-
+  const [ error, setError ] = useState(null)
+  const [ success, setSuccess ] = useState(null)
+ 
   useEffect(() => {
     contactService
       .getAll()
@@ -18,7 +21,7 @@ const App = () => {
         setPersons(contacts)
       })
       .catch(error => {
-        alert("Error: couln't load contacts from server")
+        errorSetter("Error: couldn't load contacts from server")
       })
   },[])
 
@@ -43,9 +46,10 @@ const App = () => {
         .create(newPerson)
         .then(result => {
           setPersons(persons.concat(result))
+          successSetter(`Successfully added ${newPerson.name}`)
         })
         .catch(error => {
-          alert("Error: couln't create new contact")
+          errorSetter("Error: couldn't create new contact")
         })
     } else if (window.confirm(`Overriding ${newPerson.name}'s number with ${newPerson.number}. Are you sure?`)) {
 
@@ -55,9 +59,10 @@ const App = () => {
         .update(id, newPerson)
         .then(result => {
           setPersons(persons.map(p => p.id !== id ? p : result))
+          successSetter(`Successfully updated ${newPerson.name}'s number`)
         })
         .catch(error => {
-          alert("Error: Couln't update contact")
+          errorSetter("Error: Couldn't update contact")
         })
     }
 
@@ -69,27 +74,46 @@ const App = () => {
       .remove(id)
       .then(result => {
         setPersons(persons.filter(p => p.id !== id))
+        successSetter(`Successfully deleted contact`)
       })
       .catch(error => {
-        alert("Error: couldn't delete contact")
+        errorSetter("Error: couldn't delete contact")
       })
   }
 
+  const errorSetter = (message) => {
+    setError(message)
+    setTimeout(() => {
+      setError(null)
+    }, 5000)
+  }
+
+  const successSetter = (message) => {
+    setSuccess(message)
+    setTimeout(() => {
+      setSuccess(null)
+    }, 5000)
+  }
+
   return (
-    <div id="master">
-      <h2>Phonebook</h2>
-      <Search search={search} handler={searchChangeHandler} />
-      <h3>Add new contact</h3>
-      <NewPersonForm
-        name={newPerson.name}
-        number={newPerson.number}
-        nameHandler={nameChangeHandler}
-        numberHandler={numberChangeHandler}
-        addHandler={addPerson}
-      />
-      <h3>Numbers</h3>
-      <List persons={searchRes} personDeleteHandler={personDeleteHandler} />
-    </div>
+    <>
+      <Notification message={error} cssClass="error" />
+      <Notification message={success} cssClass="success" />
+      <div id="master">
+        <h2>Phonebook</h2>
+        <Search search={search} handler={searchChangeHandler} />
+        <h3>Add new contact</h3>
+        <NewPersonForm
+          name={newPerson.name}
+          number={newPerson.number}
+          nameHandler={nameChangeHandler}
+          numberHandler={numberChangeHandler}
+          addHandler={addPerson}
+        />
+        <h3>Numbers</h3>
+        <List persons={searchRes} personDeleteHandler={personDeleteHandler} />
+      </div>
+    </>
   )
 
 }
