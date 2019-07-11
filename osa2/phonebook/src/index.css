@@ -20,7 +20,9 @@ code {
   margin-top: 20px;
   border-style: solid;
   border-width: 1px;
-  border-color: grey;
+  border-color: lightgrey;
+  border-radius: 5px;
+  box-shadow: 0 1px 2px 0 rgba(38,38,38,. 15);
 
 }
 
@@ -40,10 +42,11 @@ input {
   margin-top: 10px;
   color: red;
   font-weight: bold;
-  border-style: dotted;
-  border-width: 2 px;
+  border-radius: 5px;
+  border-style: solid;
+  border-width: 1px;
   border-color: red;
-  background: #FFC4C4;
+  background: #FFE4E4;
 }
 
 .success {
@@ -53,8 +56,9 @@ input {
   padding: 10px;
   margin-top: 10px;
   color: green;
-  border-style: dotted;
+  border-radius: 5px;
+  border-style: solid;
   border-width: 1 px;
   border-color: green;
-  background: #C7FFC4;
+  background: #E5FFE4;
 }
