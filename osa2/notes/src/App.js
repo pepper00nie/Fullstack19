@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import Note from './components/Note'
-import axios from 'axios'
+import noteService from './services/notes'
 
 const App = (props) => {
   const [notes, setNotes] = useState([])
@@ -9,34 +9,56 @@ const App = (props) => {
   const [showAll, setShowAll] = useState(true)
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/notes")
-      .then(response => {
-        setNotes(response.data)
+    noteService
+      .getAll()
+      .then(resNotes => {
+        setNotes(resNotes)
       })
+      .catch(error => alert("Error: couldn't load notes from server"))
   }, [])
 
-  const rows = () => {
-    const itemsToShow = showAll ? notes : notes.filter(note => note.important)
-    return (itemsToShow.map(note => <Note key={note.id} note={note} />))
-  }
+  const newNoteChange = (event) => setNewNote(event.target.value)
 
   const addNote = (event) => {
     event.preventDefault()
 
     const newNoteObj = {
-      id: notes.length + 1,
       content: newNote,
       date: new Date,
       important: false
     }
 
-    setNotes(notes.concat(newNoteObj))
+    noteService
+      .create(newNoteObj)
+      .then(resNote => {
+        setNotes(notes.concat(resNote))
+      })
+      .catch(error => alert("Error: couldn't create note"))
+
     setNewNote("Add a new note...")
   }
 
-  const newNoteChange = (event) => {
-    setNewNote(event.target.value)
+  const toggleImportance = id => {
+    const oldNote = notes.find(n => n.id === id)
+    const newNote = {...oldNote, important: !oldNote.important}
+
+    noteService
+      .update(id, newNote)
+      .then(resNote => {
+        setNotes(notes.map(n => n.id !== id ? n : resNote))
+      })
+      .catch(error => alert("Error: couldn't update note"))
+  }
+
+
+  const rows = () => {
+    const itemsToShow = showAll ? notes : notes.filter(note => note.important)
+    return (itemsToShow.map(note =>
+      <Note
+        key={note.id}
+        note={note}
+        toggleImportance={() => toggleImportance(note.id)}
+      />))
   }
 
   return (

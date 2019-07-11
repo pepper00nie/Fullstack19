@@ -9,7 +9,7 @@ const NewPersonForm = ({ name, number, nameHandler, numberHandler, addHandler })
           Number: <input value={number} onChange={numberHandler} />
         </div>
         <div>
-          <button type="submit" onClick={addHandler}>add</button>
+          <button type="submit" onClick={addHandler}>Add</button>
         </div>
       </form>
     </>

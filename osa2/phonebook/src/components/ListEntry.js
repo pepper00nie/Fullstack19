@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-const ListEntry = ({ person }) => {
+const ListEntry = ({ person, handler }) => {
   return (
     <>
-      <p>{person.name}, {person.number}</p>
+      <p>{person.name}, {person.number} <button onClick={handler} >Delete</button></p>
     </>
   )
 }

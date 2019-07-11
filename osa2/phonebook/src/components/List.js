@@ -2,11 +2,11 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import ListEntry from './ListEntry'
 
-const List = ({ persons }) => {
+const List = ({ persons, personDeleteHandler }) => {
   return (
     <>
       {persons.map(person =>
-        <ListEntry key={person.name} person={person} />
+        <ListEntry key={person.name} person={person} handler={() => personDeleteHandler(person.id)} />
       )}
     </>
   )
