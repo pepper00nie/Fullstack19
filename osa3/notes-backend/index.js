@@ -1,6 +1,10 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+const cors = require('cors')
+
+app.use(express.static('build'))
+app.use(cors())
 
 let notes = [
   {
@@ -25,20 +29,20 @@ let notes = [
 
 app.use(bodyParser.json())
 
-app.get('/', (req, res) => {
-	res.send('hello world')
+app.get('/api/', (req, res) => {
+	res.send('notes api')
 })
 
-app.get('/notes', (req, res) => {
+app.get('/api/notes', (req, res) => {
   res.json(notes)
 })
 
-app.get('/notes/:id', (req, res) => {
+app.get('/api/notes/:id', (req, res) => {
   const note = notes.find(n => n.id === Number(req.params.id))
   note ? res.json(note) : res.status(404).end()
 })
 
-app.post('/notes', (req, res) => {
+app.post('/api/notes', (req, res) => {
   if (!req.body.content) {
     return res.status(400).json({ error: "no content" })
   }
@@ -56,12 +60,12 @@ app.post('/notes', (req, res) => {
   res.json(newNote)
 })
 
-app.delete('/notes/:id', (req, res) => {
+app.delete('/api/notes/:id', (req, res) => {
   notes = notes.filter(n => n.id !== Number(req.params.id))
   res.status(204).end()
 })
 
-const port = 3001
+const port = process.env.PORT || 3001
 app.listen(port, () => {
   console.log(`Server running on port ${port}`)
 })
