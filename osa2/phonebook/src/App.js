@@ -49,7 +49,7 @@ const App = () => {
           successSetter(`Successfully added ${newPerson.name}`)
         })
         .catch(error => {
-          errorSetter("Error: couldn't create new contact")
+          errorSetter("Error: " + error.response.data.error)
         })
     } else if (window.confirm(`Overriding ${newPerson.name}'s number with ${newPerson.number}. Are you sure?`)) {
 
@@ -62,7 +62,7 @@ const App = () => {
           successSetter(`Successfully updated ${newPerson.name}'s number`)
         })
         .catch(error => {
-          errorSetter("Error: Couldn't update contact")
+          errorSetter("Error: " + error.response.data.error)
         })
     }
 
@@ -100,7 +100,7 @@ const App = () => {
       <Notification message={error} cssClass="error" />
       <Notification message={success} cssClass="success" />
       <div id="master">
-        <h2>Phonebook</h2>
+        <h2 className="header">Phonebook</h2>
         <Search search={search} handler={searchChangeHandler} />
         <h3>Add new contact</h3>
         <NewPersonForm
