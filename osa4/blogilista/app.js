@@ -1,9 +1,10 @@
 const express = require('express')
+
 const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const config = require('./utils/config')
 const mongoose = require('mongoose')
+const config = require('./utils/config')
 const blogsRouter = require('./controllers/blogs')
 
 app.use(cors())
