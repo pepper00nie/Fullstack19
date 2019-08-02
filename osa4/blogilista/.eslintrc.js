@@ -19,6 +19,9 @@ module.exports = {
     semi: [
       'error',
       'never'
-    ]
+    ],
+    'no-unused-expressions': [1, {
+      'allowTernary': true
+    },],
   },
 };

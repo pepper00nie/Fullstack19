@@ -26,7 +26,6 @@ describe('getting blogs', () => {
 
     expect(response.map(n => n.title)).toContain('React patterns')
   })
-
 })
 
 describe('adding a blog', () => {
