@@ -16,6 +16,10 @@ module.exports = {
     ecmaVersion: 2018,
   },
   rules: {
+    'no-underscore-dangle': [
+      'error',
+      'never'
+    ],
     semi: [
       'error',
       'never'

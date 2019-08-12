@@ -2,15 +2,20 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const helper = require('./test_helper')
 
 const api = supertest(app)
 
 beforeEach(async () => {
   await Blog.deleteMany({})
+  await User.deleteMany({})
 
   const allPromises = helper.initialTestBlogs.map(blog => new Blog(blog).save())
   await Promise.all(allPromises)
+
+  const testUser = new User(helper.testUser)
+  await testUser.save()
 })
 
 describe('getting blogs', () => {
