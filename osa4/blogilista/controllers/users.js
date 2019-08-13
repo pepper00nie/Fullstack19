@@ -15,6 +15,19 @@ usersRouter.get('/', async (req, res, next) => {
   }
 })
 
+usersRouter.get('/:id', async (req, res, next) => {
+  try {
+    const user = await User
+      .findById(req.params.id)
+      .populate('blogs', {
+        author: 1, title: 1, url: 1, likes: 1, id: 1,
+      })
+    user ? res.json(user.toJSON()) : res.status(404).end()
+  } catch (exception) {
+    next(exception)
+  }
+})
+
 usersRouter.post('/', async (req, res, next) => {
   const { username, name, password } = req.body
 
@@ -22,14 +35,12 @@ usersRouter.post('/', async (req, res, next) => {
     if (!username || !password || username.length < 3 || password.length < 3) {
       return res
         .status(400)
-        .send({ message: 'missing or invalid username or password' })
-        .end()
+        .json({ error: 'missing or invalid username or password' })
     }
     if (await User.exists({ username: username.toLowerCase() })) {
       return res
         .status(409)
-        .send({ message: 'username already exists' })
-        .end()
+        .json({ error: 'username already exists' })
     }
 
     const passwordHash = await bcrypt.hash(password, 10)
@@ -53,7 +64,7 @@ usersRouter.delete('/:id', async (req, res, next) => {
     const user = await User.findById(req.params.id)
 
     if (!user) {
-      res.status(404).end() 
+      res.status(404).end()
     }
 
     await user.remove()

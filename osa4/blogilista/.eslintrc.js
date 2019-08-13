@@ -18,7 +18,7 @@ module.exports = {
   rules: {
     'no-underscore-dangle': [
       'error',
-      'never'
+      { allow: ['_id', '__v'] }
     ],
     semi: [
       'error',

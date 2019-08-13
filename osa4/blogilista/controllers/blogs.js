@@ -1,4 +1,5 @@
 const blogsRouter = require('express').Router()
+const jwt = require('jsonwebtoken')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
@@ -24,37 +25,40 @@ blogsRouter.get('/:id', async (req, res, next) => {
 })
 
 blogsRouter.post('/', async (req, res, next) => {
-  const owner = await User.findOne({})
+  try {
+    const decodedToken = jwt.verify(req.token, process.env.SECRET)
+    const owner = await User.findById(decodedToken.id)
 
-  const {
-    title,
-    author,
-    url,
-    likes,
-  } = req.body
-
-  const blog = new Blog(
-    {
+    const {
       title,
       author,
       url,
-      likes: likes || 0,
-      user: owner._id,
-    },
-  )
+      likes,
+    } = req.body
 
-  if (!blog.title || !blog.url) {
-    res.status(400).end()
-  }
+    const blog = new Blog(
+      {
+        title,
+        author,
+        url,
+        likes: likes || 0,
+        user: owner._id,
+      },
+    )
 
-  try {
+    if (!blog.title || !blog.url) {
+      return res.status(400).end()
+    }
+
     const result = await blog.save()
+
     owner.blogs = owner.blogs.concat(result._id)
     await owner.save()
 
-    res.status(201).json(result.toJSON())
+    return res.status(201).json(result.toJSON())
   } catch (exception) {
-    next(exception)
+    
+    return next(exception)
   }
 })
 
@@ -68,9 +72,9 @@ blogsRouter.put('/:id', async (req, res, next) => {
     }
 
     const response = await Blog.findByIdAndUpdate(req.params.id, updatedBlog, { new: true })
-    res.json(response.toJSON())
+    return res.json(response.toJSON())
   } catch (exception) {
-    next(exception)
+    return next(exception)
   }
 })
 
@@ -79,13 +83,20 @@ blogsRouter.delete('/:id', async (req, res, next) => {
     const blog = await Blog.findById(req.params.id)
 
     if (!blog) {
-      res.status(404).end() 
+      return res.status(404).end()
+    }
+
+    const decodedToken = jwt.verify(req.token, process.env.SECRET)
+    const userIsOwner = decodedToken.id.toString() === blog.user.toString()
+
+    if (!userIsOwner) {
+      return res.status(401).json({ error: 'unauthorized' })
     }
 
     await blog.remove()
-    res.status(204).end()
+    return res.status(204).end()
   } catch (exception) {
-    next(exception)
+    return next(exception)
   }
 })
 
